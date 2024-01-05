@@ -13,6 +13,7 @@ has_error = False  # 错误标志
 cutoff = False     # 是否关闭调试功能的标志
 
 symbol_table = {}  # 符号表
+const_symbol_table = [] #常数变量表
 quate_list = []    # 四元式列表
 output_fp = None   # 输出文件指针
 used_temp_index = 0 # 用于生成临时变量名的索引（如T0, T1, T2...）
@@ -224,6 +225,7 @@ def block():
                     val = getVal()
                     match("const")
                     append(id, val) # 将常量添加到符号表
+                    const_symbol_table.append(id)
                 else:
                     error("在 ':=' 之后缺少数字。")
                 while getSym() == ",":
@@ -237,6 +239,7 @@ def block():
                                 val = getVal()
                                 match("const")
                                 append(id, val) # 将常量添加到符号表
+                                const_symbol_table.append(id)
                             else:
                                 error("在 ':=' 之后缺少数字。")
                         else:
@@ -283,6 +286,7 @@ def statement():
 
     # 处理 CALL 语句
     if getSym() == "CALL":
+        print('CALL')
         match("CALL")
         if getSym() == "ident":
             match("ident")
@@ -292,26 +296,27 @@ def statement():
 
     # 处理 BEGIN...END 语句
     if getSym() == "BEGIN":
+        print('BEGIN')
         match("BEGIN")
-        
         statement()
         times = 0
         while getSym() == ";":
             match(";")
             statement()
             times += 1
+            print(times)
         
-        if times != 0:
-            statement()
 
         if getSym() == "END":
             match("END")
+            print(getSym())
             return
         else:
             error("在 'BEGIN...END' 语句中缺少 'END'。")
 
     # 处理 IF...THEN... 语句
     if getSym() == "IF":
+        print('IF')
         match("IF")
         condition()
         if getSym() == "THEN":
@@ -323,6 +328,7 @@ def statement():
 
     # 处理 WHILE...DO... 语句
     if getSym() == "WHILE":
+        print('WHILE')
         match("WHILE")
         save_point()   # 保存条件位置，以便返回
         place1 = condition()  # 获取条件的结果：true/false
@@ -340,15 +346,22 @@ def statement():
 
     # 处理赋值语句
     if getSym() == "ident":
+        print('ASSGIN')
         i = getVal()
         match("ident")
         if getSym() == ":=":
             match(":=")
+            if i in const_symbol_table:
+                error('不能对常量赋值')
             place = expression()
             gen(":=", place, "_", entry(i)) # 生成四元式
             return
         else:
             error("缺少赋值符号。")
+
+    
+    
+    print(getSym(), 'no match')
 
     # 其他情况，语句可能为空
     return
@@ -395,61 +408,41 @@ def expression():
         if getSym() == "+":
             match("+")  # 匹配"+"
             place1 = term()  # 处理第一个项
-            # 处理表达式中的后续项
-            while getSym() == "+" or getSym() == "-":
-                if getSym() == "+":
-                    match("+")
-                    place2 = term()
-                    place = newTemp()  # 创建新的临时变量
-                    gen('+', place1, place2, place)  # 生成加法四元式
-                    return place
-                else:  # 当前符号是"-"
-                    match("-")
-                    place2 = term()
-                    place = newTemp()  # 创建新的临时变量
-                    gen('-', place1, place2, place)  # 生成减法四元式
-                    return place
-            else:
-                return place1
+            while getSym() == '+' or getSym() == '-':
+                sym = getSym()
+                match(sym)
+                place2 = term()
+                newplace2 = newTemp()
+                gen(sym, place1, place2, newplace2)
+                place1 = newplace2
+                match(getSym())
+            return place1
+                
         else:  # 当前符号是"-"
-            match("-")
+            match("-")  # 匹配"+"
             place1 = term()  # 处理第一个项
-            # 处理表达式中的后续项
-            while getSym() == "+" or getSym() == "-":
-                if getSym() == "+":
-                    match("+")
-                    place2 = term()
-                    place = newTemp()  # 创建新的临时变量
-                    gen('+', place1, place2, place)  # 生成加法四元式
-                    place_new = newTemp()
-                    gen('@', place, '_', place_new)
-                    return place_new
-                else:  # 当前符号是"-"
-                    match("-")
-                    place2 = term()
-                    place = newTemp()  # 创建新的临时变量
-                    gen('-', place1, place2, place)  # 生成减法四元式
-                    place_new = newTemp()
-                    gen('@', place, '_', place_new)
-                    return place_new
-            else:
-                return place1
+            newplace1 = newTemp()
+            gen('-', 0, place1, newplace1)
+            place1 = newplace1
+            while getSym() == '+' or getSym() == '-':
+                sym = getSym()
+                match(sym)
+                place2 = term()
+                newplace2 = newTemp()
+                gen(sym, place1, place2, newplace2)
+                place1 = newplace2
+            return place1
+        
     else:  # 表达式不是以"+"或"-"开始
-        place1 = term()
-        # 处理表达式中的后续项
-        while getSym() == "+" or getSym() == "-":
-            if getSym() == "+":
-                match("+")
-                place2 = term()
-                place = newTemp()  # 创建新的临时变量
-                gen('+', place1, place2, place)  # 生成加法四元式
-                return place
-            else:  # 当前符号是"-"
-                match("-")
-                place2 = term()
-                place = newTemp()  # 创建新的临时变量
-                gen('-', place1, place2, place)  # 生成减法四元式
-                return place
+        place1 = term()  # 处理第一个项
+
+        while getSym() == '+' or getSym() == '-':
+            sym = getSym()
+            match(sym)
+            place2 = term()
+            newplace2 = newTemp()
+            gen(sym, place1, place2, newplace2)
+            place1 = newplace2
         return place1
 
 # term 函数：对应PL/0语法中的 "term" 非终结符
@@ -463,13 +456,13 @@ def term():
             place2 = factor()
             place = newTemp()  # 创建新的临时变量
             gen('*', place1, place2, place)  # 生成乘法四元式
-            return place
+            place1 = place
         else:  # 当前符号是"/"
             match("/")
             place2 = factor()
             place = newTemp()  # 创建新的临时变量
             gen('/', place1, place2, place)  # 生成除法四元式
-            return place
+            place1 = place
     else:
         return place1
 
