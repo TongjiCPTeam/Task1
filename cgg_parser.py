@@ -302,6 +302,8 @@ def statement():
             match(";")
             statement()
             times += 1
+        if times != 0:
+            statement()
         
 
         if getSym() == "END":
