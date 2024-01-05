@@ -286,7 +286,6 @@ def statement():
 
     # 处理 CALL 语句
     if getSym() == "CALL":
-        print('CALL')
         match("CALL")
         if getSym() == "ident":
             match("ident")
@@ -296,7 +295,6 @@ def statement():
 
     # 处理 BEGIN...END 语句
     if getSym() == "BEGIN":
-        print('BEGIN')
         match("BEGIN")
         statement()
         times = 0
@@ -304,19 +302,16 @@ def statement():
             match(";")
             statement()
             times += 1
-            print(times)
         
 
         if getSym() == "END":
             match("END")
-            print(getSym())
             return
         else:
             error("在 'BEGIN...END' 语句中缺少 'END'。")
 
     # 处理 IF...THEN... 语句
     if getSym() == "IF":
-        print('IF')
         match("IF")
         condition()
         if getSym() == "THEN":
@@ -328,7 +323,6 @@ def statement():
 
     # 处理 WHILE...DO... 语句
     if getSym() == "WHILE":
-        print('WHILE')
         match("WHILE")
         save_point()   # 保存条件位置，以便返回
         place1 = condition()  # 获取条件的结果：true/false
@@ -346,7 +340,6 @@ def statement():
 
     # 处理赋值语句
     if getSym() == "ident":
-        print('ASSGIN')
         i = getVal()
         match("ident")
         if getSym() == ":=":
@@ -360,8 +353,6 @@ def statement():
             error("缺少赋值符号。")
 
     
-    
-    print(getSym(), 'no match')
 
     # 其他情况，语句可能为空
     return
