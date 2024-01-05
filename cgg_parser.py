@@ -285,13 +285,16 @@ def statement():
     # 处理 BEGIN...END 语句
     if getSym() == "BEGIN":
         match("BEGIN")
+        
         statement()
-
+        times = 0
         while getSym() == ";":
             match(";")
             statement()
-
-        statement()
+            times += 1
+        
+        if times != 0:
+            statement()
 
         if getSym() == "END":
             match("END")
