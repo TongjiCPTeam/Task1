@@ -10,7 +10,6 @@ import re
 # 字典将保留的关键字/符号（在源代码中出现的）映射到程序的内部字符串类型
 kwordDict = {
     "PROGRAM": "PROGRAM",
-    "PROCEDURE": "PROCEDURE",
     "CALL": "CALL",
     "BEGIN": "BEGIN",
     "END": "END",
@@ -70,6 +69,9 @@ def getSrc(srcPath):
     srcFile = open(srcPath, "r")
     srcList = srcFile.readlines()
     srcFile.close()
+
+    # 在源代码列表的末尾添加'.'字符
+    srcList.append('.')  # 添加'.'字符作为程序结束标志
 
 # 执行词法分析
 def getRes():
