@@ -21,6 +21,14 @@ saved_line = 1      # 保存的行号，用于while循环
 refill_line = 1     # 需要回填的行号
 
 # 定义一些语义动作的函数：
+def check_in_table(id):
+    if id in symbol_table:
+        return True
+    else:
+        return False
+
+
+
 def match(symName):
     """
     匹配刚读入的符号并打印成功消息。
@@ -355,22 +363,19 @@ def condition():
     else:
         place1 = expression()
         if getSym() == "=":
-            op = getSym()
+            op = 'j=' #getSym()
             match("=")
-        elif getSym() == "#":
-            op = getSym()
-            match("#")
         elif getSym() == "<":
-            op = getSym()
+            op = 'j<' #getSym()
             match("<")
         elif getSym() == "<=":
-            op = getSym()
+            op = 'j<=' #getSym()
             match("<=")
         elif getSym() == ">":
-            op = getSym()
+            op = 'j>' #getSym()
             match(">")
         elif getSym() == ">=":
-            op = getSym()
+            op = 'j>=' #getSym()
             match(">=")
         else:
             error("在表达式中缺少操作符（'=', '#', '<', '<=', '>', '>='）。")
@@ -393,12 +398,14 @@ def expression():
             # 处理表达式中的后续项
             while getSym() == "+" or getSym() == "-":
                 if getSym() == "+":
+                    expression()
                     match("+")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
                     gen('+', place1, place2, place)  # 生成加法四元式
                     return place
                 else:  # 当前符号是"-"
+                    expression()
                     match("-")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
@@ -409,9 +416,13 @@ def expression():
         else:  # 当前符号是"-"
             match("-")
             place1 = term()  # 处理第一个项
+            newPlace1 = newTemp()
+            gen('-', 0, place1, newPlace1)
+            place1 = newPlace1
             # 处理表达式中的后续项
             while getSym() == "+" or getSym() == "-":
                 if getSym() == "+":
+                    expression()
                     match("+")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
@@ -420,6 +431,7 @@ def expression():
                     gen('@', place, '_', place_new)
                     return place_new
                 else:  # 当前符号是"-"
+                    expression()
                     match("-")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
@@ -474,10 +486,14 @@ def factor():
     # 如果当前符号是标识符
     if getSym() == "ident":
         place = entry(getVal())  # 获取标识符的值
+        if not check_in_table(place):
+            error(f'未定义变量{place}')
         match("ident")
         return place
     elif getSym() == "const":  # 如果当前符号是常数
         place = entry(getVal())
+        if not check_in_table(place) and type(place) not in (int, float):
+            error(f'未定义常量{place}')
         match("const")
         return place
     elif getSym() == "(":  # 如果当前符号是左括号

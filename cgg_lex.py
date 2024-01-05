@@ -28,7 +28,6 @@ symDict = {
     "/": "/",
     ":=": ":=",
     "=": "=",
-    "#": "#",
     ">": ">",
     ">=": ">=",
     "<": "<",
@@ -163,9 +162,6 @@ def getRes():
                 now += 1
             elif buf[now] == "=":
                 resList.append((symDict["="], None))
-                now += 1
-            elif buf[now] == "#":
-                resList.append((symDict["#"], None))
                 now += 1
             elif buf[now] == ">":
                 if now == bufLen - 1:  # ">" is at the end of buf
