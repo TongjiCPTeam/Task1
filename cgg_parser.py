@@ -398,14 +398,12 @@ def expression():
             # 处理表达式中的后续项
             while getSym() == "+" or getSym() == "-":
                 if getSym() == "+":
-                    expression()
                     match("+")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
                     gen('+', place1, place2, place)  # 生成加法四元式
                     return place
                 else:  # 当前符号是"-"
-                    expression()
                     match("-")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
@@ -416,13 +414,9 @@ def expression():
         else:  # 当前符号是"-"
             match("-")
             place1 = term()  # 处理第一个项
-            newPlace1 = newTemp()
-            gen('-', 0, place1, newPlace1)
-            place1 = newPlace1
             # 处理表达式中的后续项
             while getSym() == "+" or getSym() == "-":
                 if getSym() == "+":
-                    expression()
                     match("+")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
@@ -431,7 +425,6 @@ def expression():
                     gen('@', place, '_', place_new)
                     return place_new
                 else:  # 当前符号是"-"
-                    expression()
                     match("-")
                     place2 = term()
                     place = newTemp()  # 创建新的临时变量
