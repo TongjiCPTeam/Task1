@@ -33,12 +33,6 @@ if __name__ == "__main__":
     # 将词法分析的结果传递给语法分析器
     p.getSen()
 
-    # 将语法分析器接收到的输入输出到文件，每个元素单独一行
-    with open("syntax_analysis_input.txt", "w") as file:
-        file.write("syntax_analysis_input:\n")
-        for item in p.sentence:
-            file.write(str(item) + "\n")
-
     # 启动语法分析器
     p.openOut()  # 打开输出文件
     p.program()  # 开始语法分析并生成中间代码

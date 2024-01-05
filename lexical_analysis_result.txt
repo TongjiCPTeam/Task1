@@ -1,4 +1,6 @@
 lexical_analysis_result:
+('PROGRAM', None)
+('ident', 'add')
 ('VAR', None)
 ('ident', 'x')
 (',', None)
