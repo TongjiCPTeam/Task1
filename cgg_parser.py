@@ -189,11 +189,14 @@ program	= block "."
 # program 函数：对应PL/0语法中的 "program" 非终结符
 def program():
     during("program()")
-    block()
+    if getSym() == "PROGRAM":
+        match("PROGRAM")  # 匹配并跳过 "PROGRAM" 关键字
+        if getSym() == "ident":
+            match("ident")    # 如果紧跟着的是标识符，则匹配并跳过程序名称
+    block()             # 继续解析程序主体
     if getSym() == ".":
-        print("匹配到 '.'，不能再继续移动。")
-        print("编译完成！")
-        return
+        match(".")       # 匹配程序末尾的 "."
+        print("程序解析完成！")
     else:
         error("程序的末尾缺少 '.'。")
 
