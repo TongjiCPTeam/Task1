@@ -191,7 +191,8 @@ def program():
     during("program()")
     if getSym() == "PROGRAM":
         match("PROGRAM")  # 匹配并跳过 "PROGRAM" 关键字
-        match("ident")    # 匹配并跳过程序名称
+        if getSym() == "ident":
+            match("ident")    # 如果紧跟着的是标识符，则匹配并跳过程序名称
     block()             # 继续解析程序主体
     if getSym() == ".":
         match(".")       # 匹配程序末尾的 "."
