@@ -1,9 +1,18 @@
-PROGRAM add
+PROGRAM test
+CONST a=1,b=2;
 VAR x,y;
 BEGIN
-  x:=1;
-  y:=2;
-  WHILE x<5 DO x:=x+1;
-  IF y>0 THEN y:=y-1;
-  y:=y+x;
-END.
+    x:=1;
+    y:=2;
+    IF x<y THEN
+        BEGIN
+            x:=3;
+            IF x>y THEN
+                y:=4;
+        END;
+    WHILE x<6 DO
+        BEGIN
+            x:=y+1;
+            y:=y*x;
+        END;
+END

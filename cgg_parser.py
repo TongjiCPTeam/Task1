@@ -265,21 +265,6 @@ def block():
             error("在 VAR 声明中缺少标识符。")
 
     # 过程定义区域
-    while getSym() == "PROCEDURE":
-        match("PROCEDURE")
-        if getSym() == "ident":
-            match("ident")
-            if getSym() == ";":
-                match(";")
-                block()
-                if getSym() == ";":
-                    match(";")
-                else:
-                    error("在过程体后缺少 ';'。")
-            else:
-                error("在 PROCEDURE 声明后忘记了 ';'。")
-        else:
-            error("在定义 PROCEDURE 时缺少标识符。")
 
     # 语句区域
     statement()
