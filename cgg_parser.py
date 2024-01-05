@@ -210,35 +210,35 @@ def block():
         if getSym() == "ident":
             id = getVal()
             match("ident")
-            if getSym() == "=":
-                match("=")
+            if getSym() == ":=":
+                match(":=")
                 if getSym() == "const":
                     val = getVal()
                     match("const")
                     append(id, val) # 将常量添加到符号表
                 else:
-                    error("在 '=' 之后缺少数字。")
+                    error("在 ':=' 之后缺少数字。")
                 while getSym() == ",":
                     match(",")
                     if getSym() == "ident":
                         id = getVal()
                         match("ident")
-                        if getSym() == "=":
-                            match("=")
+                        if getSym() == ":=":
+                            match(":=")
                             if getSym() == "const":
                                 val = getVal()
                                 match("const")
                                 append(id, val) # 将常量添加到符号表
                             else:
-                                error("在 '=' 之后缺少数字。")
+                                error("在 ':=' 之后缺少数字。")
                         else:
-                            error("在常量声明中缺少 '='。")
+                            error("在常量声明中缺少 ':='。")
                 if getSym() == ";":
                     match(";")
                 else:
                     error("在 CONST 声明后忘记了 ';'。")
             else:
-                error("在常量声明中缺少 '='。")
+                error("在常量声明中缺少 ':='。")
         else:
             error("在 CONST 声明中缺少标识符。")
 
@@ -264,7 +264,6 @@ def block():
         else:
             error("在 VAR 声明中缺少标识符。")
 
-    # 过程定义区域
 
     # 语句区域
     statement()
@@ -292,6 +291,8 @@ def statement():
             match(";")
             statement()
 
+        statement()
+
         if getSym() == "END":
             match("END")
             return
@@ -315,7 +316,7 @@ def statement():
         save_point()   # 保存条件位置，以便返回
         place1 = condition()  # 获取条件的结果：true/false
         save_refill() # 记住这一行，我们将在 while...do 的最后一行回填 0
-        gen("je", place1, "_", "0") # 跳出 while...do
+        gen("jez", place1, "_", "0") # 跳出 while...do
         if getSym() == "DO":
             match("DO")
             statement()

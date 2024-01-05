@@ -1,5 +1,5 @@
 PROGRAM test
-CONST a=1,b=2;
+CONST a:=1,b:=2;
 VAR x,y;
 BEGIN
     x:=1;
@@ -8,11 +8,11 @@ BEGIN
         BEGIN
             x:=3;
             IF x>y THEN
-                y:=4;
-        END;
+                y:=4
+        END
     WHILE x<6 DO
         BEGIN
             x:=y+1;
-            y:=y*x;
-        END;
+            y:=y*x
+        END
 END

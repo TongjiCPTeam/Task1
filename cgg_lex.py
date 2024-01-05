@@ -113,6 +113,7 @@ def getRes():
                         resList.append((kwordDict[strToken], None))
                     else:
                         resList.append(("ident", strToken))
+                    strToken = "" # 在被识别后清理令牌
                 else:
                     while IsLetter(buf[now]) or IsDigit(buf[now]):
                         strToken += buf[now]

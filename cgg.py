@@ -24,6 +24,7 @@ if __name__ == "__main__":
     # 启动词法分析器
     l.getRes()
 
+
     # 将词法分析的结果输出到文件，每个元素单独一行
     with open("lexical_analysis_result.txt", "w") as file:
         file.write("lexical_analysis_result:\n")
